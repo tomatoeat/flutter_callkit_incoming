@@ -382,7 +382,19 @@ public class SwiftFlutterCallkitIncomingPlugin: NSObject, FlutterPlugin, CXProvi
         }
         self.answerCall = call
         sendEvent(SwiftFlutterCallkitIncomingPlugin.ACTION_CALL_ACCEPT, self.data?.toJSON())
-        action.fulfill()
+        checkUnlockedAndFulfill(action: action, counter: 0)
+    }
+    
+    private func checkUnlockedAndFulfill(action: CXAnswerCallAction, counter: Int) {
+	if UIApplication.shared.isProtectedDataAvailable {
+		action.fulfill()
+	} else if counter > 180 { // fail if waiting for more then 3 minutes
+		action.fail()
+	} else {
+		DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+			self.checkUnlockedAndFulfill(action: action, counter: counter + 1)
+		}
+	}
     }
     
 
