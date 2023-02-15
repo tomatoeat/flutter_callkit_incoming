@@ -343,11 +343,6 @@ public class SwiftFlutterCallkitIncomingPlugin: NSObject, FlutterPlugin, CXProvi
     }
     
     
-    
-    
-    
-    
-    
     public func providerDidReset(_ provider: CXProvider) {
         if(self.callManager == nil){ return }
         for call in self.callManager!.calls{
@@ -382,23 +377,13 @@ public class SwiftFlutterCallkitIncomingPlugin: NSObject, FlutterPlugin, CXProvi
         }
         self.answerCall = call
         sendEvent(SwiftFlutterCallkitIncomingPlugin.ACTION_CALL_ACCEPT, self.data?.toJSON())
-        checkUnlockedAndFulfill(action: action, counter: 0)
-    }
-    
-    private func checkUnlockedAndFulfill(action: CXAnswerCallAction, counter: Int) {
-	if UIApplication.shared.isProtectedDataAvailable {
-		action.fulfill()
-	} else if counter > 180 { // fail if waiting for more then 3 minutes
-		action.fail()
-	} else {
-		DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-			self.checkUnlockedAndFulfill(action: action, counter: counter + 1)
-		}
-	}
+        //checkUnlockedAndFulfill(action: action, counter: 0)
+        action.fulfill()
     }
     
 
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+        /*
         guard let call = self.callManager?.callWithUUID(uuid: action.callUUID) else {
             if(self.answerCall == nil && self.outgoingCall == nil){
                 sendEvent(SwiftFlutterCallkitIncomingPlugin.ACTION_CALL_TIMEOUT, self.data?.toJSON())
@@ -419,6 +404,7 @@ public class SwiftFlutterCallkitIncomingPlugin: NSObject, FlutterPlugin, CXProvi
             sendEvent(SwiftFlutterCallkitIncomingPlugin.ACTION_CALL_ENDED, self.data?.toJSON())
             action.fulfill()
         }
+         */
     }
     
     
